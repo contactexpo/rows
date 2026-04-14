@@ -6,45 +6,57 @@ const MusicPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const tryPlay = useCallback(() => {
-    if (!audioRef.current) return;
+    const audio = audioRef.current;
+    if (!audio) return;
     
-    // Ensure volume is up
-    audioRef.current.volume = 0.6;
+    console.log("Attempting to play audio...");
+    audio.volume = 0.6;
     
-    const playPromise = audioRef.current.play();
+    // Explicitly load and then play
+    audio.load();
+    const playPromise = audio.play();
+    
     if (playPromise !== undefined) {
       playPromise
         .then(() => {
-          console.log("Audio playing successfully");
+          console.log("SUCCESS: Audio is playing");
           setIsPlaying(true);
         })
         .catch((error) => {
-          console.error("Audio play failed:", error);
+          console.error("ERROR: Audio play failed", error);
+          // If it fails, we try one more time on the next user interaction
           setIsPlaying(false);
         });
     }
   }, []);
 
   useEffect(() => {
-    // Listen for the specific start-music event
+    // Expose tryPlay to window so other components can call it directly
+    (window as any).playWeddingMusic = () => {
+      console.log("playWeddingMusic called from window");
+      tryPlay();
+    };
+
     const handleStartMusic = () => {
-      console.log("Music start signal received");
+      console.log("start-music event caught");
       tryPlay();
     };
     
     window.addEventListener("start-music", handleStartMusic);
     
-    // Fallback: any click anywhere on the document should try to start music if not playing
+    // Last resort fallback: any click anywhere on the document
     const globalClickHandler = () => {
-      if (!isPlaying) tryPlay();
+      console.log("Global click caught - attempting audio");
+      tryPlay();
     };
     document.addEventListener("click", globalClickHandler, { once: true });
 
     return () => {
       window.removeEventListener("start-music", handleStartMusic);
       document.removeEventListener("click", globalClickHandler);
+      delete (window as any).playWeddingMusic;
     };
-  }, [tryPlay, isPlaying]);
+  }, [tryPlay]);
 
   const toggleMusic = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent triggering any parent click handlers

@@ -18,13 +18,18 @@ const LoaderScreen = ({ onComplete }: Props) => {
   }, []);
 
   const handleEnter = () => {
-    // Immediate audio trigger on user gesture
+    console.log("Enter clicked - starting gates and music");
+    
+    // First, try to call the music function directly from window
+    if ((window as any).playWeddingMusic) {
+      (window as any).playWeddingMusic();
+    }
+    
+    // Also dispatch the event as a backup
     window.dispatchEvent(new CustomEvent("start-music"));
     
-    // Start gate animation
+    // Animation
     setIsOpening(true);
-    
-    // Complete after animation
     setTimeout(() => {
       setShow(false);
       onComplete();
@@ -156,17 +161,14 @@ const LoaderScreen = ({ onComplete }: Props) => {
                     <motion.div
                       className="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     />
-                    <div className="relative z-10 flex flex-col items-center gap-2">
-                      <span className="font-heading text-accent text-2xl md:text-3xl tracking-[0.2em] font-bold">
+                    <div className="relative z-10 flex flex-col items-center gap-4">
+                      <span className="font-heading text-accent text-3xl md:text-5xl tracking-[0.2em] font-bold">
                         शुभ प्रवेश
                       </span>
-                      <span className="text-accent/60 text-xs tracking-[0.3em] uppercase">
-                        क्लिक करें और द्वार खोलें
-                      </span>
                       <motion.div
-                        animate={{ y: [0, 5, 0] }}
-                        transition={{ duration: 1.5, repeat: Infinity }}
-                        className="text-2xl mt-2"
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="text-3xl"
                       >
                         🏰
                       </motion.div>
