@@ -9,7 +9,7 @@ import MusicPlayer from "@/components/MusicPlayer";
 
 const Index = () => {
   const [loaded, setLoaded] = useState(false);
-  const [autoScroll, setAutoScroll] = useState(false);
+  const [autoScroll, setAutoScroll] = useState(true);
   const scrollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const handleLoaded = useCallback(() => setLoaded(true), []);
