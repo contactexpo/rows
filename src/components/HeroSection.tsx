@@ -141,17 +141,24 @@ const HeroSection = () => {
 
       {/* Scroll indicator */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 3.5, duration: 1 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
+        className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 sm:bottom-10"
       >
-        <p className="font-heading text-accent/60 text-xs tracking-[0.3em] uppercase">नीचे स्क्रॉल करें</p>
+        <div className="rounded-full border border-accent/20 bg-background/40 px-4 py-2 backdrop-blur-sm">
+          <p className="font-heading text-[11px] text-accent/80 tracking-[0.18em] whitespace-nowrap">
+            नीचे स्क्रॉल करें
+          </p>
+        </div>
         <motion.div
           animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="w-px h-12 bg-gradient-to-b from-accent/60 to-transparent"
-        />
+          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          className="flex flex-col items-center gap-2"
+        >
+          <span className="text-accent/70 text-sm">↓</span>
+          <div className="h-10 w-px bg-gradient-to-b from-accent/70 to-transparent sm:h-12" />
+        </motion.div>
       </motion.div>
     </section>
   );
