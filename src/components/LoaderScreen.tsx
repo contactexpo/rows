@@ -7,43 +7,30 @@ interface Props {
 
 const LoaderScreen = ({ onComplete }: Props) => {
   const [show, setShow] = useState(true);
-  const [canEnter, setCanEnter] = useState(false);
-  const [isOpening, setIsOpening] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setCanEnter(true);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
+  const [isExiting, setIsExiting] = useState(false);
 
   const handleEnter = () => {
-    console.log("Enter clicked - starting gates and music");
-    
-    // First, try to call the music function directly from window
+    // Immediate audio trigger
     if ((window as any).playWeddingMusic) {
       (window as any).playWeddingMusic();
     }
-    
-    // Also dispatch the event as a backup
     window.dispatchEvent(new CustomEvent("start-music"));
     
-    // Animation
-    setIsOpening(true);
+    setIsExiting(true);
     setTimeout(() => {
       setShow(false);
       onComplete();
-    }, 1500);
+    }, 1200);
   };
 
   const particles = useMemo(
-    () => Array.from({ length: 30 }, (_, i) => ({
+    () => Array.from({ length: 40 }, (_, i) => ({
       id: i,
-      delay: Math.random() * 2,
+      delay: Math.random() * 5,
       x: Math.random() * 100,
       y: Math.random() * 100,
-      size: 1 + Math.random() * 3,
-      duration: 4 + Math.random() * 6,
+      size: 1 + Math.random() * 2,
+      duration: 10 + Math.random() * 20,
     })),
     []
   );
@@ -52,38 +39,18 @@ const LoaderScreen = ({ onComplete }: Props) => {
     <AnimatePresence>
       {show && (
         <motion.div
-          className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-[#050302]"
+          className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-[#0a0604]"
+          exit={{ opacity: 0 }}
         >
-          {/* Left Gate */}
-          <motion.div
-            initial={{ x: 0 }}
-            animate={isOpening ? { x: "-100%" } : { x: 0 }}
-            transition={{ duration: 1.5, ease: [0.45, 0, 0.55, 1] }}
-            className="absolute inset-y-0 left-0 w-1/2 z-[110] bg-[#1a0f0a] border-r border-gold/30 shadow-[10px_0_30px_rgba(0,0,0,0.5)] flex items-center justify-end"
-          >
-            <div className="mr-[-50px] opacity-20 text-[20rem] pointer-events-none">🏛️</div>
-          </motion.div>
-
-          {/* Right Gate */}
-          <motion.div
-            initial={{ x: 0 }}
-            animate={isOpening ? { x: "100%" } : { x: 0 }}
-            transition={{ duration: 1.5, ease: [0.45, 0, 0.55, 1] }}
-            className="absolute inset-y-0 right-0 w-1/2 z-[110] bg-[#1a0f0a] border-l border-gold/30 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] flex items-center justify-start"
-          >
-            <div className="ml-[-50px] opacity-20 text-[20rem] pointer-events-none scale-x-[-1]">🏛️</div>
-          </motion.div>
-
-          {/* Background Particles */}
-          <div className="absolute inset-0 z-0">
+          {/* Elegant Background Particles */}
+          <div className="absolute inset-0 z-0 pointer-events-none">
             {particles.map((p) => (
               <motion.div
                 key={p.id}
-                initial={{ opacity: 0, y: 100 }}
+                initial={{ opacity: 0 }}
                 animate={{
-                  opacity: [0, 1, 0],
-                  y: -300,
-                  x: Math.sin(p.id) * 100,
+                  opacity: [0, 0.4, 0],
+                  y: [-20, -100],
                 }}
                 transition={{ 
                   duration: p.duration, 
@@ -91,111 +58,93 @@ const LoaderScreen = ({ onComplete }: Props) => {
                   repeat: Infinity,
                   ease: "linear" 
                 }}
-                className="absolute rounded-full bg-accent/30"
+                className="absolute rounded-full bg-accent/20"
                 style={{ left: `${p.x}%`, top: `${p.y}%`, width: p.size, height: p.size }}
               />
             ))}
           </div>
 
-          {/* Central Content */}
-          <motion.div 
-            animate={isOpening ? { opacity: 0, scale: 0.8 } : { opacity: 1, scale: 1 }}
-            className="relative z-[120] flex flex-col items-center gap-12 max-w-lg px-6"
+          {/* Curtain Effect */}
+          <motion.div
+            initial={{ y: 0 }}
+            animate={isExiting ? { y: "-100%" } : { y: 0 }}
+            transition={{ duration: 1, ease: [0.645, 0.045, 0.355, 1] }}
+            className="absolute inset-0 z-[110] bg-[#140a08] flex items-center justify-center border-b border-gold/20"
           >
-            {/* Shehnai */}
-            <div className="flex items-center gap-24">
-              <motion.div
-                initial={{ x: -100, opacity: 0, rotate: -45 }}
-                animate={{ x: 0, opacity: 1, rotate: -15 }}
-                transition={{ duration: 1.2, ease: "easeOut" }}
-                className="text-6xl drop-shadow-gold"
-              >
-                🪈
-              </motion.div>
-              <motion.div
-                initial={{ x: 100, opacity: 0, rotate: 45 }}
-                animate={{ x: 0, opacity: 1, rotate: 15 }}
-                transition={{ duration: 1.2, ease: "easeOut" }}
-                className="text-6xl drop-shadow-gold scale-x-[-1]"
-              >
-                🪈
-              </motion.div>
-            </div>
-
-            {/* Om + Text */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.5 }}
-              className="text-center"
+            {/* Inner Glow */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsl(var(--gold)/0.05)_0%,transparent_70%)]" />
+            
+            <motion.div 
+              animate={isExiting ? { opacity: 0, scale: 0.9, y: -20 } : { opacity: 1, scale: 1, y: 0 }}
+              className="relative z-[120] flex flex-col items-center gap-16 max-w-lg px-6"
             >
+              {/* Ganesh Ji Icon */}
               <motion.div
-                className="font-heading text-accent text-3xl md:text-5xl tracking-widest mb-4 drop-shadow-gold whitespace-nowrap px-4 w-full flex justify-center items-center"
-                animate={{ opacity: [0.8, 1, 0.8] }}
-                transition={{ duration: 3, repeat: Infinity }}
-              >
-                ॥ श्री गणेशाय नमः ॥
-              </motion.div>
-
-              <motion.div
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ delay: 1.2, duration: 1 }}
-                className="w-48 h-0.5 bg-gradient-to-r from-transparent via-accent to-transparent mx-auto rounded-full"
-              />
-            </motion.div>
-
-            {/* Enter Button (Gate Trigger) */}
-            <div className="h-32 flex items-center justify-center">
-              <AnimatePresence>
-                {canEnter && !isOpening && (
-                  <motion.button
-                    initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, scale: 1.2, filter: "blur(10px)" }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleEnter}
-                    className="group relative px-12 py-6 glass-card rounded-2xl overflow-hidden border-2 border-accent/40 shadow-gold transition-all duration-300"
-                  >
-                    <motion.div
-                      className="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    />
-                    <div className="relative z-10 flex flex-col items-center gap-6">
-                      <span className="font-heading text-accent text-4xl md:text-6xl tracking-[0.25em] font-bold drop-shadow-gold">
-                        शुभ प्रवेश
-                      </span>
-                      <motion.div
-                        animate={{ scale: [1, 1.2, 1], rotate: [0, 5, -5, 0] }}
-                        transition={{ duration: 3, repeat: Infinity }}
-                        className="text-4xl"
-                      >
-                        🏰
-                      </motion.div>
-                    </div>
-                  </motion.button>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Loading Indicator */}
-            {!canEnter && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex flex-col items-center gap-4"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1.5, ease: "easeOut" }}
+                className="relative"
               >
                 <motion.div 
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                  className="w-12 h-12 border-2 border-accent/20 border-t-accent rounded-full"
+                  animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.6, 0.3] }}
+                  transition={{ duration: 4, repeat: Infinity }}
+                  className="absolute -inset-8 bg-accent/10 rounded-full blur-2xl"
                 />
-                <p className="font-heading text-accent/60 text-sm tracking-widest animate-pulse">
-                  तैयार हो रहा है...
-                </p>
+                <span className="text-7xl drop-shadow-gold relative z-10">🕉️</span>
               </motion.div>
-            )}
+
+              {/* Main Text */}
+              <div className="text-center space-y-6">
+                <motion.h2
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5, duration: 1 }}
+                  className="font-heading text-accent text-4xl md:text-6xl tracking-[0.3em] font-bold whitespace-nowrap drop-shadow-gold"
+                >
+                  शुभ विवाह
+                </motion.h2>
+                <motion.div
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ delay: 1, duration: 1 }}
+                  className="w-32 h-px bg-gradient-to-r from-transparent via-accent/50 to-transparent mx-auto"
+                />
+              </div>
+
+              {/* Shubh Pravesh Button */}
+              <motion.button
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.5, duration: 0.8 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleEnter}
+                className="group relative px-16 py-6 glass-card rounded-full overflow-hidden border border-accent/30 shadow-gold transition-all duration-500 hover:border-accent/60"
+              >
+                <div className="absolute inset-0 bg-accent/5 group-hover:bg-accent/10 transition-colors duration-500" />
+                <div className="relative z-10 flex flex-col items-center gap-1">
+                  <span className="font-heading text-accent text-2xl md:text-3xl tracking-[0.2em] font-semibold">
+                    शुभ प्रवेश
+                  </span>
+                  <motion.span 
+                    animate={{ y: [0, 3, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="text-accent/40 text-[10px] tracking-[0.4em] uppercase mt-1"
+                  >
+                    Enter Invitation
+                  </motion.span>
+                </div>
+              </motion.button>
+            </motion.div>
           </motion.div>
+
+          {/* Bottom Curtain (Slightly delayed or mirrored) */}
+          <motion.div
+            initial={{ y: 0 }}
+            animate={isExiting ? { y: "100%" } : { y: 0 }}
+            transition={{ duration: 1, ease: [0.645, 0.045, 0.355, 1] }}
+            className="absolute inset-0 z-[105] bg-[#0a0604]"
+          />
         </motion.div>
       )}
     </AnimatePresence>
