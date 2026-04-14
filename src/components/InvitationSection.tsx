@@ -38,7 +38,7 @@ const InvitationSection = () => {
                 className="mx-auto mb-4 glow-gold"
               />
 
-              <p className="font-heading text-gold text-base mb-2 tracking-wide">
+              <p className="font-heading text-gold text-base mb-2 tracking-wide whitespace-nowrap">
                 ॥ श्री गणेशाय नमः ॥
               </p>
               <p className="font-body text-muted-foreground text-xs leading-relaxed mb-6 italic">

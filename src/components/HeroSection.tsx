@@ -84,7 +84,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 1.2 }}
-          className="font-heading text-6xl md:text-8xl font-bold text-foreground leading-tight mb-3"
+          className="font-heading text-5xl md:text-8xl font-bold text-foreground leading-tight mb-3"
         >
           आयु. कु. खुशी
         </motion.h1>
@@ -109,7 +109,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 2 }}
-          className="font-heading text-6xl md:text-8xl font-bold text-foreground leading-tight"
+          className="font-heading text-5xl md:text-8xl font-bold text-foreground leading-tight"
         >
           चि. विमलेश
         </motion.h1>

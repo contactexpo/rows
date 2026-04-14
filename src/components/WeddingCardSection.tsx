@@ -48,7 +48,7 @@ const WeddingCardSection = () => {
               />
             </motion.div>
 
-            <p className="font-heading text-accent text-xl md:text-2xl mb-2 tracking-wide">
+            <p className="font-heading text-accent text-xl md:text-2xl mb-2 tracking-wide whitespace-nowrap">
               ॥ श्री गणेशाय नमः ॥
             </p>
             <p className="font-body text-muted-foreground text-base md:text-lg italic mb-8 leading-relaxed">

@@ -17,7 +17,12 @@ const LoaderScreen = ({ onComplete }: Props) => {
   }, []);
 
   const handleEnter = () => {
+    // Attempt multiple ways to trigger music
     window.dispatchEvent(new CustomEvent("start-music"));
+    if ((window as any).forcePlayMusic) {
+      (window as any).forcePlayMusic();
+    }
+    
     setShow(false);
     setTimeout(onComplete, 800);
   };
@@ -105,13 +110,13 @@ const LoaderScreen = ({ onComplete }: Props) => {
               transition={{ duration: 1, delay: 0.5 }}
               className="text-center"
             >
-              <motion.p
-                className="font-heading text-accent text-5xl md:text-6xl tracking-widest mb-4 drop-shadow-gold"
+              <motion.div
+                className="font-heading text-accent text-3xl md:text-5xl tracking-widest mb-4 drop-shadow-gold whitespace-nowrap px-4 w-full flex justify-center items-center"
                 animate={{ opacity: [0.8, 1, 0.8] }}
                 transition={{ duration: 3, repeat: Infinity }}
               >
                 ॥ श्री गणेशाय नमः ॥
-              </motion.p>
+              </motion.div>
 
               <motion.div
                 initial={{ scaleX: 0 }}

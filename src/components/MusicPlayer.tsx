@@ -7,17 +7,30 @@ const MusicPlayer = () => {
 
   const tryPlay = useCallback(() => {
     if (!audioRef.current) return;
-    audioRef.current.volume = 0.4;
-    audioRef.current.play().then(() => {
-      setIsPlaying(true);
-    }).catch(() => {});
+    audioRef.current.volume = 0.5;
+    const playPromise = audioRef.current.play();
+    
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch((error) => {
+          console.error("Autoplay prevented:", error);
+          setIsPlaying(false);
+        });
+    }
   }, []);
 
   useEffect(() => {
-    const handleStartMusic = () => tryPlay();
+    const handleStartMusic = () => {
+      console.log("Starting music from event...");
+      tryPlay();
+    };
     window.addEventListener("start-music", handleStartMusic);
     
-    // Original fallback for any user interaction
+    // Add a global function for immediate play from other components
+    (window as any).forcePlayMusic = () => tryPlay();
     const handler = () => {
       tryPlay();
       document.removeEventListener("click", handler);
@@ -49,10 +62,10 @@ const MusicPlayer = () => {
 
   return (
     <>
-      <audio ref={audioRef} loop preload="auto" src="/audio/wedding-song.mp4" />
+      <audio ref={audioRef} loop preload="auto" src="/audio/wedding-song.mp3" />
       <button
         onClick={toggleMusic}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 glass-card text-foreground rounded-full flex items-center justify-center shadow-gold hover:scale-110 active:scale-95 transition-all duration-300 border border-accent/40"
+        className="fixed bottom-6 right-6 z-50 w-12 h-12 md:w-14 md:h-14 glass-card text-foreground rounded-full flex items-center justify-center shadow-gold hover:scale-110 active:scale-95 transition-all duration-300 border border-accent/40"
         aria-label={isPlaying ? "संगीत बंद करें" : "संगीत चालू करें"}
       >
         <motion.div
