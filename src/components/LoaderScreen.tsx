@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 interface Props {
   onComplete: () => void;
@@ -22,6 +22,15 @@ const LoaderScreen = ({ onComplete }: Props) => {
       onComplete();
     }, 1200);
   };
+
+  useEffect(() => {
+    // Automatically trigger entry after 1.5 seconds
+    const autoEntryTimer = setTimeout(() => {
+      handleEnter();
+    }, 1500);
+
+    return () => clearTimeout(autoEntryTimer);
+  }, []);
 
   const particles = useMemo(
     () => Array.from({ length: 40 }, (_, i) => ({
