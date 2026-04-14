@@ -8,33 +8,37 @@ interface Props {
 const LoaderScreen = ({ onComplete }: Props) => {
   const [show, setShow] = useState(true);
   const [canEnter, setCanEnter] = useState(false);
+  const [isOpening, setIsOpening] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setCanEnter(true);
-    }, 2500);
+    }, 2000);
     return () => clearTimeout(timer);
   }, []);
 
   const handleEnter = () => {
-    // Attempt multiple ways to trigger music
+    // Immediate audio trigger on user gesture
     window.dispatchEvent(new CustomEvent("start-music"));
-    if ((window as any).forcePlayMusic) {
-      (window as any).forcePlayMusic();
-    }
     
-    setShow(false);
-    setTimeout(onComplete, 800);
+    // Start gate animation
+    setIsOpening(true);
+    
+    // Complete after animation
+    setTimeout(() => {
+      setShow(false);
+      onComplete();
+    }, 1500);
   };
 
   const particles = useMemo(
-    () => Array.from({ length: 25 }, (_, i) => ({
+    () => Array.from({ length: 30 }, (_, i) => ({
       id: i,
       delay: Math.random() * 2,
       x: Math.random() * 100,
       y: Math.random() * 100,
       size: 1 + Math.random() * 3,
-      duration: 3 + Math.random() * 4,
+      duration: 4 + Math.random() * 6,
     })),
     []
   );
@@ -43,46 +47,56 @@ const LoaderScreen = ({ onComplete }: Props) => {
     <AnimatePresence>
       {show && (
         <motion.div
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
-          className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden"
-          style={{ background: "radial-gradient(circle at 50% 50%, #1a0f0a 0%, #050302 100%)" }}
+          className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-[#050302]"
         >
-          {/* Animated gold particles */}
-          {particles.map((p) => (
-            <motion.div
-              key={p.id}
-              initial={{ opacity: 0, y: 100 }}
-              animate={{
-                opacity: [0, 1, 0],
-                y: -200,
-                x: Math.sin(p.id) * 50,
-              }}
-              transition={{ 
-                duration: p.duration, 
-                delay: p.delay, 
-                repeat: Infinity,
-                ease: "linear" 
-              }}
-              className="absolute rounded-full bg-accent/40"
-              style={{ left: `${p.x}%`, top: `${p.y}%`, width: p.size, height: p.size }}
-            />
-          ))}
-
-          {/* Central golden glow */}
+          {/* Left Gate */}
           <motion.div
-            animate={{ 
-              scale: [1, 1.2, 1],
-              opacity: [0.3, 0.5, 0.3]
-            }}
-            transition={{ duration: 4, repeat: Infinity }}
-            className="absolute w-[500px] h-[500px] rounded-full"
-            style={{ background: "radial-gradient(circle, hsl(38 75% 55% / 0.15) 0%, transparent 70%)" }}
-          />
+            initial={{ x: 0 }}
+            animate={isOpening ? { x: "-100%" } : { x: 0 }}
+            transition={{ duration: 1.5, ease: [0.45, 0, 0.55, 1] }}
+            className="absolute inset-y-0 left-0 w-1/2 z-[110] bg-[#1a0f0a] border-r border-gold/30 shadow-[10px_0_30px_rgba(0,0,0,0.5)] flex items-center justify-end"
+          >
+            <div className="mr-[-50px] opacity-20 text-[20rem] pointer-events-none">🏛️</div>
+          </motion.div>
 
-          {/* Content */}
-          <div className="relative z-10 flex flex-col items-center gap-12 max-w-lg px-6">
+          {/* Right Gate */}
+          <motion.div
+            initial={{ x: 0 }}
+            animate={isOpening ? { x: "100%" } : { x: 0 }}
+            transition={{ duration: 1.5, ease: [0.45, 0, 0.55, 1] }}
+            className="absolute inset-y-0 right-0 w-1/2 z-[110] bg-[#1a0f0a] border-l border-gold/30 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] flex items-center justify-start"
+          >
+            <div className="ml-[-50px] opacity-20 text-[20rem] pointer-events-none scale-x-[-1]">🏛️</div>
+          </motion.div>
+
+          {/* Background Particles */}
+          <div className="absolute inset-0 z-0">
+            {particles.map((p) => (
+              <motion.div
+                key={p.id}
+                initial={{ opacity: 0, y: 100 }}
+                animate={{
+                  opacity: [0, 1, 0],
+                  y: -300,
+                  x: Math.sin(p.id) * 100,
+                }}
+                transition={{ 
+                  duration: p.duration, 
+                  delay: p.delay, 
+                  repeat: Infinity,
+                  ease: "linear" 
+                }}
+                className="absolute rounded-full bg-accent/30"
+                style={{ left: `${p.x}%`, top: `${p.y}%`, width: p.size, height: p.size }}
+              />
+            ))}
+          </div>
+
+          {/* Central Content */}
+          <motion.div 
+            animate={isOpening ? { opacity: 0, scale: 0.8 } : { opacity: 1, scale: 1 }}
+            className="relative z-[120] flex flex-col items-center gap-12 max-w-lg px-6"
+          >
             {/* Shehnai */}
             <div className="flex items-center gap-24">
               <motion.div
@@ -126,54 +140,60 @@ const LoaderScreen = ({ onComplete }: Props) => {
               />
             </motion.div>
 
-            {/* Enter Button */}
-            <div className="h-24 flex items-center justify-center">
+            {/* Enter Button (Gate Trigger) */}
+            <div className="h-32 flex items-center justify-center">
               <AnimatePresence>
-                {canEnter && (
+                {canEnter && !isOpening && (
                   <motion.button
                     initial={{ opacity: 0, y: 20, scale: 0.9 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, scale: 1.1 }}
+                    exit={{ opacity: 0, scale: 1.2, filter: "blur(10px)" }}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={handleEnter}
-                    className="group relative px-10 py-4 glass-card rounded-full overflow-hidden border border-accent/40 shadow-gold transition-all duration-300"
+                    className="group relative px-12 py-6 glass-card rounded-2xl overflow-hidden border-2 border-accent/40 shadow-gold transition-all duration-300"
                   >
                     <motion.div
-                      className="absolute inset-0 bg-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      className="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     />
-                    <span className="relative z-10 font-heading text-accent text-xl md:text-2xl tracking-widest flex items-center gap-3">
-                      निमंत्रण पत्र खोलें
-                      <motion.span
-                        animate={{ x: [0, 5, 0] }}
+                    <div className="relative z-10 flex flex-col items-center gap-2">
+                      <span className="font-heading text-accent text-2xl md:text-3xl tracking-[0.2em] font-bold">
+                        शुभ प्रवेश
+                      </span>
+                      <span className="text-accent/60 text-xs tracking-[0.3em] uppercase">
+                        क्लिक करें और द्वार खोलें
+                      </span>
+                      <motion.div
+                        animate={{ y: [0, 5, 0] }}
                         transition={{ duration: 1.5, repeat: Infinity }}
+                        className="text-2xl mt-2"
                       >
-                        ✨
-                      </motion.span>
-                    </span>
+                        🏰
+                      </motion.div>
+                    </div>
                   </motion.button>
                 )}
               </AnimatePresence>
             </div>
 
-            {/* Diya */}
+            {/* Loading Indicator */}
             {!canEnter && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 1.5 }}
-                className="flex gap-4"
+                className="flex flex-col items-center gap-4"
               >
-                <motion.span
-                  animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="text-3xl"
-                >
-                  🪔
-                </motion.span>
+                <motion.div 
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                  className="w-12 h-12 border-2 border-accent/20 border-t-accent rounded-full"
+                />
+                <p className="font-heading text-accent/60 text-sm tracking-widest animate-pulse">
+                  तैयार हो रहा है...
+                </p>
               </motion.div>
             )}
-          </div>
+          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const MusicPlayer = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -7,82 +7,96 @@ const MusicPlayer = () => {
 
   const tryPlay = useCallback(() => {
     if (!audioRef.current) return;
-    audioRef.current.volume = 0.5;
-    const playPromise = audioRef.current.play();
     
+    // Ensure volume is up
+    audioRef.current.volume = 0.6;
+    
+    const playPromise = audioRef.current.play();
     if (playPromise !== undefined) {
       playPromise
         .then(() => {
+          console.log("Audio playing successfully");
           setIsPlaying(true);
         })
         .catch((error) => {
-          console.error("Autoplay prevented:", error);
+          console.error("Audio play failed:", error);
           setIsPlaying(false);
         });
     }
   }, []);
 
   useEffect(() => {
+    // Listen for the specific start-music event
     const handleStartMusic = () => {
-      console.log("Starting music from event...");
+      console.log("Music start signal received");
       tryPlay();
     };
+    
     window.addEventListener("start-music", handleStartMusic);
     
-    // Add a global function for immediate play from other components
-    (window as any).forcePlayMusic = () => tryPlay();
-    const handler = () => {
-      tryPlay();
-      document.removeEventListener("click", handler);
-      document.removeEventListener("touchstart", handler);
-      document.removeEventListener("scroll", handler);
+    // Fallback: any click anywhere on the document should try to start music if not playing
+    const globalClickHandler = () => {
+      if (!isPlaying) tryPlay();
     };
-    document.addEventListener("click", handler, { passive: true });
-    document.addEventListener("touchstart", handler, { passive: true });
-    document.addEventListener("scroll", handler, { passive: true });
-    
+    document.addEventListener("click", globalClickHandler, { once: true });
+
     return () => {
       window.removeEventListener("start-music", handleStartMusic);
-      document.removeEventListener("click", handler);
-      document.removeEventListener("touchstart", handler);
-      document.removeEventListener("scroll", handler);
+      document.removeEventListener("click", globalClickHandler);
     };
-  }, [tryPlay]);
+  }, [tryPlay, isPlaying]);
 
-  const toggleMusic = () => {
+  const toggleMusic = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering any parent click handlers
     if (!audioRef.current) return;
+    
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
-      audioRef.current.volume = 0.4;
-      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+      tryPlay();
     }
   };
 
   return (
     <>
-      <audio ref={audioRef} loop preload="auto" src="/audio/wedding-song.mp3" />
-      <button
-        onClick={toggleMusic}
-        className="fixed bottom-6 right-6 z-50 w-12 h-12 md:w-14 md:h-14 glass-card text-foreground rounded-full flex items-center justify-center shadow-gold hover:scale-110 active:scale-95 transition-all duration-300 border border-accent/40"
-        aria-label={isPlaying ? "संगीत बंद करें" : "संगीत चालू करें"}
+      {/* Audio element with crossOrigin and explicit source */}
+      <audio 
+        ref={audioRef} 
+        loop 
+        preload="auto" 
+        id="main-wedding-audio"
       >
-        <motion.div
-          animate={isPlaying ? { rotate: 360 } : { rotate: 0 }}
-          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-          className="relative"
-        >
-          <span className="text-2xl">{isPlaying ? "🎵" : "🔇"}</span>
-          {isPlaying && (
-            <motion.span
-              animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="absolute -inset-2 rounded-full border border-accent/30"
-            />
-          )}
-        </motion.div>
-      </button>
+        <source src="/audio/wedding-song.mp3" type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
+
+      <AnimatePresence>
+        {isPlaying !== undefined && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            onClick={toggleMusic}
+            className="fixed bottom-6 right-6 z-[60] w-12 h-12 md:w-16 md:h-16 glass-card text-foreground rounded-full flex items-center justify-center shadow-gold border border-accent/40 active:scale-90 transition-transform"
+            aria-label={isPlaying ? "Stop Music" : "Play Music"}
+          >
+            <motion.div
+              animate={isPlaying ? { rotate: 360 } : { rotate: 0 }}
+              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+              className="relative flex items-center justify-center"
+            >
+              <span className="text-2xl md:text-3xl">{isPlaying ? "🎵" : "🔇"}</span>
+              {isPlaying && (
+                <motion.span
+                  animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0.6, 0.3] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="absolute inset-0 rounded-full border-2 border-accent/30"
+                />
+              )}
+            </motion.div>
+          </motion.button>
+        )}
+      </AnimatePresence>
     </>
   );
 };
