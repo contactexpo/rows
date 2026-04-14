@@ -12,8 +12,6 @@ const MusicPlayer = () => {
     console.log("Attempting to play audio...");
     audio.volume = 0.6;
     
-    // Explicitly load and then play
-    audio.load();
     const playPromise = audio.play();
     
     if (playPromise !== undefined) {
@@ -78,8 +76,10 @@ const MusicPlayer = () => {
         loop 
         preload="auto" 
         id="main-wedding-audio"
+        playsInline
       >
         <source src="/audio/wedding-song.mp3" type="audio/mpeg" />
+        <source src="/audio/wedding.mp3" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
 

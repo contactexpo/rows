@@ -161,14 +161,14 @@ const LoaderScreen = ({ onComplete }: Props) => {
                     <motion.div
                       className="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     />
-                    <div className="relative z-10 flex flex-col items-center gap-4">
-                      <span className="font-heading text-accent text-3xl md:text-5xl tracking-[0.2em] font-bold">
+                    <div className="relative z-10 flex flex-col items-center gap-6">
+                      <span className="font-heading text-accent text-4xl md:text-6xl tracking-[0.25em] font-bold drop-shadow-gold">
                         शुभ प्रवेश
                       </span>
                       <motion.div
-                        animate={{ scale: [1, 1.2, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                        className="text-3xl"
+                        animate={{ scale: [1, 1.2, 1], rotate: [0, 5, -5, 0] }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                        className="text-4xl"
                       >
                         🏰
                       </motion.div>
