@@ -8,43 +8,34 @@ const MusicPlayer = () => {
   const tryPlay = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    
-    console.log("Attempting to play audio...");
+
     audio.volume = 0.6;
-    
     const playPromise = audio.play();
-    
+
     if (playPromise !== undefined) {
       playPromise
         .then(() => {
-          console.log("SUCCESS: Audio is playing");
           setIsPlaying(true);
         })
         .catch((error) => {
-          console.error("ERROR: Audio play failed", error);
-          // If it fails, we try one more time on the next user interaction
+          console.error("Audio play failed", error);
           setIsPlaying(false);
         });
     }
   }, []);
 
   useEffect(() => {
-    // Expose tryPlay to window so other components can call it directly
     (window as any).playWeddingMusic = () => {
-      console.log("playWeddingMusic called from window");
       tryPlay();
     };
 
     const handleStartMusic = () => {
-      console.log("start-music event caught");
       tryPlay();
     };
-    
+
     window.addEventListener("start-music", handleStartMusic);
-    
-    // Last resort fallback: any click anywhere on the document
+
     const globalClickHandler = () => {
-      console.log("Global click caught - attempting audio");
       tryPlay();
     };
     document.addEventListener("click", globalClickHandler, { once: true });
@@ -77,6 +68,8 @@ const MusicPlayer = () => {
         preload="auto" 
         id="main-wedding-audio"
         playsInline
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
       >
         <source src="/audio/wedding-song.mp3" type="audio/mpeg" />
         <source src="/audio/wedding.mp3" type="audio/mpeg" />
@@ -89,8 +82,8 @@ const MusicPlayer = () => {
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             onClick={toggleMusic}
-            className="fixed bottom-6 right-6 z-[60] w-12 h-12 md:w-16 md:h-16 glass-card text-foreground rounded-full flex items-center justify-center shadow-gold border border-accent/40 active:scale-90 transition-transform"
-            aria-label={isPlaying ? "Stop Music" : "Play Music"}
+            className="fixed bottom-5 right-5 z-[60] flex h-12 w-12 items-center justify-center rounded-full border border-accent/40 glass-card text-foreground shadow-gold transition-transform active:scale-90 md:bottom-6 md:right-6 md:h-16 md:w-16"
+            aria-label={isPlaying ? "संगीत बंद करें" : "संगीत चालू करें"}
           >
             <motion.div
               animate={isPlaying ? { rotate: 360 } : { rotate: 0 }}

@@ -164,7 +164,7 @@ const WeddingCardSection = () => {
             ♛ मांगलिक कार्यक्रम ♛
           </p>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {events.map((event, i) => (
               <motion.div
                 key={event.name}
@@ -174,7 +174,7 @@ const WeddingCardSection = () => {
                 transition={{ delay: 0.4 + i * 0.15, duration: 0.6 }}
                 whileHover={{ scale: 1.05, y: -5 }}
                 whileTap={{ scale: 1.05, y: -5 }}
-                className="glass-card rounded-2xl p-6 text-center shadow-gold cursor-default transition-all duration-300 border border-accent/10"
+                className="glass-card rounded-2xl border border-accent/10 p-6 text-center shadow-gold transition-all duration-300 cursor-default"
               >
                 <motion.span
                   animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
@@ -184,9 +184,9 @@ const WeddingCardSection = () => {
                   {event.icon}
                 </motion.span>
                 <p className="font-heading text-foreground font-bold text-xl mb-1">{event.name}</p>
-                <p className="font-body text-accent/80 text-base">{event.date}</p>
+                <p className="font-body text-accent/80 text-sm sm:text-base">{event.date}</p>
                 {event.time && (
-                  <p className="font-body text-accent text-base font-semibold mt-1">{event.time}</p>
+                  <p className="font-body text-accent text-sm sm:text-base font-semibold mt-1">{event.time}</p>
                 )}
               </motion.div>
             ))}

@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 
 interface Props {
   onComplete: () => void;
@@ -76,7 +76,7 @@ const LoaderScreen = ({ onComplete }: Props) => {
             
             <motion.div 
               animate={isExiting ? { opacity: 0, scale: 0.9, y: -20 } : { opacity: 1, scale: 1, y: 0 }}
-              className="relative z-[120] flex flex-col items-center gap-16 max-w-lg px-6"
+              className="relative z-[120] flex flex-col items-center gap-12 max-w-lg px-6"
             >
               {/* Ganesh Ji Icon */}
               <motion.div
@@ -94,12 +94,20 @@ const LoaderScreen = ({ onComplete }: Props) => {
               </motion.div>
 
               {/* Main Text */}
-              <div className="text-center space-y-6">
+              <div className="text-center space-y-5">
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.8 }}
+                  className="font-heading text-sm text-accent/70 tracking-[0.18em] whitespace-nowrap"
+                >
+                  ॥ श्री गणेशाय नमः ॥
+                </motion.p>
                 <motion.h2
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5, duration: 1 }}
-                  className="font-heading text-accent text-4xl md:text-6xl tracking-[0.3em] font-bold whitespace-nowrap drop-shadow-gold"
+                  className="font-heading text-accent text-3xl sm:text-4xl md:text-6xl tracking-[0.16em] sm:tracking-[0.24em] font-bold whitespace-nowrap drop-shadow-gold"
                 >
                   शुभ विवाह
                 </motion.h2>
@@ -119,20 +127,18 @@ const LoaderScreen = ({ onComplete }: Props) => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleEnter}
-                className="group relative px-16 py-6 glass-card rounded-full overflow-hidden border border-accent/30 shadow-gold transition-all duration-500 hover:border-accent/60"
+                className="group relative overflow-hidden rounded-full border border-accent/30 px-12 py-5 shadow-gold transition-all duration-500 hover:border-accent/60 sm:px-16 sm:py-6"
               >
                 <div className="absolute inset-0 bg-accent/5 group-hover:bg-accent/10 transition-colors duration-500" />
-                <div className="relative z-10 flex flex-col items-center gap-1">
-                  <span className="font-heading text-accent text-2xl md:text-3xl tracking-[0.2em] font-semibold">
+                <div className="relative z-10 flex items-center gap-3">
+                  <motion.span
+                    animate={{ opacity: [0.35, 0.8, 0.35], scale: [1, 1.15, 1] }}
+                    transition={{ duration: 2.2, repeat: Infinity }}
+                    className="h-2.5 w-2.5 rounded-full bg-accent/80 shadow-[0_0_12px_rgba(212,160,23,0.7)]"
+                  />
+                  <span className="font-heading text-accent text-xl font-semibold tracking-[0.18em] sm:text-2xl md:text-3xl">
                     शुभ प्रवेश
                   </span>
-                  <motion.span 
-                    animate={{ y: [0, 3, 0] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="text-accent/40 text-[10px] tracking-[0.4em] uppercase mt-1"
-                  >
-                    Enter Invitation
-                  </motion.span>
                 </div>
               </motion.button>
             </motion.div>
