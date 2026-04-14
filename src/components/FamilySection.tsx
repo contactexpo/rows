@@ -47,7 +47,7 @@ const FamilySection = () => {
               </p>
               <p className="font-body text-foreground">
                 <span className="text-gold font-heading text-xs">भाई</span><br />
-                विकास, आकाश, अमन, सुरज, सुजित, राजकुमार
+                विकास, आकाश, अमन, सुरज, सुजीत, राजकुमार
               </p>
               <p className="font-body text-foreground">
                 <span className="text-gold font-heading text-xs">मामा</span><br />

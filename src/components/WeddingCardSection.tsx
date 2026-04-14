@@ -129,7 +129,7 @@ const WeddingCardSection = () => {
                 </p>
                 <p className="text-foreground/70">
                   <span className="text-accent/80 font-heading text-base">भाई — </span>
-                  विकास, आकाश, अमन, सूरज, सुमित, राजकुमार
+                  विकास, आकाश, अमन, सूरज, सुजीत, राजकुमार
                 </p>
                 <p className="text-foreground/70">
                   <span className="text-accent/80 font-heading text-base">मामा — </span>
